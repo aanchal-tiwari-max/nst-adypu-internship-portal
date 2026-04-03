@@ -244,3 +244,5 @@ app.listen(PORT, () => {
   console.log(`   Dashboard   : http://localhost:${PORT}`);
   console.log(`   Health      : http://localhost:${PORT}/api/health\n`);
 });
+
+module.exports = app;
