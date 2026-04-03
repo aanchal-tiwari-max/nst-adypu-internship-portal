@@ -19,7 +19,21 @@ app.use(express.static(path.join(__dirname, '../frontend/public')));
 let STUDENTS = [];
 async function load_data(){
   try {
-      const gcred = process.env.GOOGLE_CREDENTIALS || await fs.readFile(path.join(__dirname, 'credentials.json'), 'utf-8')
+      let gcred;
+
+if (process.env.GOOGLE_CREDENTIALS) {
+  gcred = JSON.parse(process.env.GOOGLE_CREDENTIALS);
+
+  // 🔥 FIX for private key newline issue
+  gcred.private_key = gcred.private_key.replace(/\\n/g, "\n");
+
+} else {
+  const file = await fs.readFile(
+    path.join(__dirname, "credentials.json"),
+    "utf-8"
+  );
+  gcred = JSON.parse(file);
+}
   const auth = new google.auth.GoogleAuth({
     credentials: JSON.parse(gcred),
     scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
