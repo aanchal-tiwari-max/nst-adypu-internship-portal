@@ -1,8 +1,5 @@
 // ── api.js — All API calls to the backend ──────────────────────
-import dotenv from 'dotenv';
-dotenv.config()
 const BASE = '/api';
-console.log(process.env.API)
 
 async function fetchJSON(url) {
   const res = await fetch(url);

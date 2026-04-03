@@ -1,6 +1,5 @@
 // ── app.js — Main dashboard application logic ──────────────────
 
-const { statusBadge, resumeBadge, getInitials, drawDonut, updateTime, BC } = Utils;
 
 // ── State ─────────────────────────────────────────────────────
 const state = {
