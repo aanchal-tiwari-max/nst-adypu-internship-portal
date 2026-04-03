@@ -21,31 +21,37 @@ async function load_data(){
   try {
       let gcred;
 
-if (process.env.GOOGLE_CREDENTIALS) {
-  gcred = JSON.parse(process.env.GOOGLE_CREDENTIALS);
+// if (process.env.GOOGLE_CREDENTIALS) {
+//   gcred = JSON.parse(process.env.GOOGLE_CREDENTIALS);
 
-  // 🔥 FIX for private key newline issue
-  gcred.private_key = gcred.private_key.replace(/\\n/g, "\n");
+//   // 🔥 FIX for private key newline issue
+//   gcred.private_key = gcred.private_key.replace(/\\n/g, "\n");
 
-} else {
+// } else {
+// }
+
   const file = await fs.readFile(
     path.join(__dirname, "credentials.json"),
     "utf-8"
   );
   gcred = JSON.parse(file);
-}
+  // console.log(gcred)
+  // console.log("TYPE:", typeof gcred);
   const auth = new google.auth.GoogleAuth({
-    credentials: JSON.parse(gcred),
+    credentials: gcred,
     scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
   });
-  
+  // console.log("hello")
       const client = await auth.getClient();
       const sheets = google.sheets({ version: "v4", auth: client });
       const spreadsheetId = process.env.SPREADSHEETID;
+      
+      // console.log(spreadsheetId)
       const response1 = await sheets.spreadsheets.values.get({
         spreadsheetId,
         range: "Resume Approval!A1:AI999", // change as needed
       });
+      // console.log(spreadsheetId)
       const response2 = await sheets.spreadsheets.values.get({
         spreadsheetId,
         range: "Mentor List!A1:M999", // change as needed
@@ -90,6 +96,7 @@ if (process.env.GOOGLE_CREDENTIALS) {
 
         
       })
+        // console.log("hellow")
       for(const el in data){
         for(const key in data[el]){
           if(data[el][key] === undefined){
@@ -97,6 +104,7 @@ if (process.env.GOOGLE_CREDENTIALS) {
           }
         }
       }
+        // console.log("hellow")
       await fs.writeFile(
         "students_data.json",
         JSON.stringify(data)
