@@ -1,8 +1,10 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const fs = require('fs');
-
+const fs = require('fs').promises;
+const dotenv = require('dotenv');
+const { google } = require('googleapis')
+dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -15,14 +17,91 @@ app.use(express.static(path.join(__dirname, '../frontend/public')));
 
 // ─── Load Data ────────────────────────────────────────────────
 let STUDENTS = [];
-try {
-  const raw = fs.readFileSync(path.join(__dirname, 'students_data.json'), 'utf-8');
-  STUDENTS = JSON.parse(raw);
-  console.log(`✅ Loaded ${STUDENTS.length} students from data file`);
+async function load_data(){
+  try {
+      const gcred = process.env.GOOGLE_CREDENTIALS || await fs.readFile(path.join(__dirname, 'credentials.json'), 'utf-8')
+  const auth = new google.auth.GoogleAuth({
+    credentials: JSON.parse(gcred),
+    scopes: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
+  });
+  
+      const client = await auth.getClient();
+      const sheets = google.sheets({ version: "v4", auth: client });
+      const spreadsheetId = process.env.SPREADSHEETID;
+      const response1 = await sheets.spreadsheets.values.get({
+        spreadsheetId,
+        range: "Resume Approval!A1:AI999", // change as needed
+      });
+      const response2 = await sheets.spreadsheets.values.get({
+        spreadsheetId,
+        range: "Mentor List!A1:M999", // change as needed
+      });
+      const response3 = await sheets.spreadsheets.values.get({
+        spreadsheetId,
+        range: "Placement status!A1:AI999", // change as needed
+      });
+      const collatedData = {}
+      response1.data.values.slice(2).forEach(el => {
+
+        if (collatedData[el[0]] === undefined) collatedData[el[0]] = {}
+        collatedData[el[0]]["sheet1"] = el;
+      })
+      response2.data.values.slice(1).forEach(el => {
+
+        if (collatedData[el[0]] === undefined) collatedData[el[0]] = {}
+        collatedData[el[0]]["sheet2"] = el;
+      })
+      response3.data.values.slice(2).forEach(el => {
+        if (collatedData[el[0]] === undefined) collatedData[el[0]] = {}
+        collatedData[el[0]]["sheet3"] = el;
+      })
+
+      const data = Object.values(collatedData).map(el => {
+        
+        return {
+          "uid": el["sheet1"][0],
+          "name": el["sheet1"][2],
+          "email": el["sheet1"][3],
+          "batch": el["sheet1"][5],
+          "status": el["sheet1"][11],
+          "resume": el["sheet1"][15],
+          "pr": el["sheet2"][7],
+          "cohort": el["sheet2"][11],
+          "mentor": el["sheet1"][12],
+          "company": el["sheet3"][8],
+          "profile": el["sheet3"][7],
+          "enrollment": el["sheet2"][1],
+          "resumeLink": el["sheet1"][4],
+        }
+
+        
+      })
+      for(const el in data){
+        for(const key in data[el]){
+          if(data[el][key] === undefined){
+            data[el][key] = ""
+          }
+        }
+      }
+      await fs.writeFile(
+        "students_data.json",
+        JSON.stringify(data)
+      )
+      const raw = await fs.readFile(
+          path.join(__dirname, "students_data.json"),
+          "utf-8"
+        );
+        STUDENTS = JSON.parse(raw);
+        console.log(`✅ Loaded ${STUDENTS.length} students from data file`);
+      
+  
+
 } catch (err) {
   console.error('❌ Failed to load students_data.json:', err.message);
 }
+}
 
+load_data();
 // ─── Helper: compute stats ────────────────────────────────────
 function computeStats(data) {
   const total = data.length;
@@ -57,12 +136,15 @@ app.get('/api/health', (req, res) => {
 });
 
 // GET /api/stats - Dashboard KPI stats
-app.get('/api/stats', (req, res) => {
+app.get('/api/stats', async (req, res) => {
+await load_data()
   res.json(computeStats(STUDENTS));
 });
 
 // GET /api/students - All students with filtering, search, pagination, sort
-app.get('/api/students', (req, res) => {
+app.get('/api/students', async (req, res) => {
+  
+  await load_data();
   const {
     search = '',
     status = 'all',
