@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NST — ADYPU Internship Portal</title>
+  <link rel="stylesheet" href="./css/styles.css" />
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<div class="header">
+  <div class="logo">
+    <div class="logo-dot"></div>
+    <div class="logo-text">
+      <h1><span class="nst">NST</span> — ADYPU Internship Portal</h1>
+      <div class="sub">Ajeenkya DY Patil University · Newton School of Technology · Placement Dashboard</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:16px;">
+    <div class="last-update" id="lastUpdate"></div>
+    <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+  </div>
+</div>
+
+<!-- ── TABS ── -->
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('overview', this)">📊 Overview</div>
+  <div class="tab" onclick="switchTab('students', this)">👨‍🎓 All Students</div>
+  <div class="tab" onclick="switchTab('mentors', this)">👤 Mentors</div>
+  <div class="tab" onclick="switchTab('companies', this)">🏢 Companies</div>
+  <div class="tab" onclick="switchTab('api', this)">⚙ API Docs</div>
+</div>
+
+<!-- ── MAIN ── -->
+<div class="main">
+
+  <!-- LIVE TICKER -->
+  <div class="ticker">
+    <div class="ticker-inner" id="tickerContent">
+      <div class="ticker-item"><div class="dot"></div>Loading placed students...</div>
+    </div>
+  </div>
+
+  <!-- OVERVIEW TAB -->
+  <div class="section active" id="sec-overview">
+    <div class="stats-grid" id="statsGrid">
+      <div class="loading"><div class="spinner"></div> Loading stats...</div>
+    </div>
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-title">Placement Status Breakdown</div>
+        <div class="donut-wrap">
+          <svg width="140" height="140" viewBox="0 0 140 140">
+            <circle cx="70" cy="70" r="54" fill="none" stroke="#1e2535" stroke-width="20"/>
+            <g id="donutArcs"></g>
+            <text x="70" y="65" text-anchor="middle" fill="#e2e8f0" font-size="22" font-weight="700" font-family="JetBrains Mono,monospace" id="donutCenter">…</text>
+            <text x="70" y="82" text-anchor="middle" fill="#64748b" font-size="10" font-family="Space Grotesk,sans-serif">Total</text>
+          </svg>
+          <div class="donut-legend" id="donutLegend"></div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Resume Status Distribution</div>
+        <div class="donut-wrap">
+          <svg width="140" height="140" viewBox="0 0 140 140">
+            <circle cx="70" cy="70" r="54" fill="none" stroke="#1e2535" stroke-width="20"/>
+            <g id="resumeArcs"></g>
+            <text x="70" y="65" text-anchor="middle" fill="#e2e8f0" font-size="22" font-weight="700" font-family="JetBrains Mono,monospace" id="resumeCenter">…</text>
+            <text x="70" y="82" text-anchor="middle" fill="#64748b" font-size="10" font-family="Space Grotesk,sans-serif">Reviewed</text>
+          </svg>
+          <div class="donut-legend" id="resumeLegend"></div>
+        </div>
+      </div>
+    </div>
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-title">Top Companies by Placements</div>
+        <div class="bar-chart" id="companiesBar"><div class="loading"><div class="spinner"></div></div></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Batch Distribution</div>
+        <div class="bar-chart" id="batchBar"><div class="loading"><div class="spinner"></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STUDENTS TAB -->
+  <div class="section" id="sec-students">
+    <div class="table-wrap">
+      <div class="table-header">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="table-title">All Students</div>
+          <span id="tableCount" style="color:var(--muted);font-weight:400;font-size:0.8rem;"></span>
+        </div>
+        <div class="search-box">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="searchInput" placeholder="Search name, UID, mentor, company..." oninput="onSearch()">
+        </div>
+      </div>
+
+      <!-- FILTERS -->
+      <div class="filter-section">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div class="filter-label">🔍 Filter Students</div>
+          <button class="clear-filters" onclick="clearAllFilters()">✕ Clear All Filters</button>
+        </div>
+        <div class="filter-groups">
+          <div class="filter-group-row">
+            <div class="filter-group-label">Intern Status</div>
+            <button class="fbtn active-status" data-type="status" data-val="all"               onclick="toggleFilter(this,'status')">All</button>
+            <button class="fbtn"               data-type="status" data-val="Placed"             onclick="toggleFilter(this,'status')">✅ Placed</button>
+            <button class="fbtn"               data-type="status" data-val="entrepreneurship"   onclick="toggleFilter(this,'status')">🚀 Entrepreneurship</button>
+            <button class="fbtn"               data-type="status" data-val="Already working"    onclick="toggleFilter(this,'status')">💼 Already Working</button>
+            <button class="fbtn"               data-type="status" data-val="External Offer"     onclick="toggleFilter(this,'status')">🔗 External Offer</button>
+            <button class="fbtn"               data-type="status" data-val="Internal Placed CP" onclick="toggleFilter(this,'status')">⭐ Internal CP</button>
+            <button class="fbtn"               data-type="status" data-val="Back to Placement"  onclick="toggleFilter(this,'status')">🔄 Back to Placement</button>
+          </div>
+          <div class="filter-group-row">
+            <div class="filter-group-label">Resume Status</div>
+            <button class="fbtn active-resume" data-type="resume" data-val="all"                  onclick="toggleFilter(this,'resume')">All</button>
+            <button class="fbtn"               data-type="resume" data-val="Approved"             onclick="toggleFilter(this,'resume')">✔ Approved</button>
+            <button class="fbtn"               data-type="resume" data-val="Correction Required"  onclick="toggleFilter(this,'resume')">⚠ Correction Req.</button>
+            <button class="fbtn"               data-type="resume" data-val="Resume Not required"  onclick="toggleFilter(this,'resume')">🚫 Not Required</button>
+            <button class="fbtn"               data-type="resume" data-val="none"                 onclick="toggleFilter(this,'resume')">⏳ Pending</button>
+          </div>
+          <div class="filter-group-row">
+            <div class="filter-group-label">Batch</div>
+            <button class="fbtn active-batch" data-type="batch" data-val="all"       onclick="toggleFilter(this,'batch')">All</button>
+            <button class="fbtn"              data-type="batch" data-val="Ramanujan" onclick="toggleFilter(this,'batch')">Ramanujan</button>
+            <button class="fbtn"              data-type="batch" data-val="Hopper"    onclick="toggleFilter(this,'batch')">Hopper</button>
+            <button class="fbtn"              data-type="batch" data-val="Turing"    onclick="toggleFilter(this,'batch')">Turing</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th class="sortable" onclick="sortTable('uid')">User ID ↕</th>
+              <th class="sortable" onclick="sortTable('name')">Name ↕</th>
+              <th>Enrollment No.</th>
+              <th class="sortable" onclick="sortTable('batch')">Batch ↕</th>
+              <th class="sortable" onclick="sortTable('mentor')">Mentor ↕</th>
+              <th>Internship Status</th>
+              <th>Resume Status</th>
+              <th>Company</th>
+              <th>Profile / Role</th>
+            </tr>
+          </thead>
+          <tbody id="studentTableBody">
+            <tr><td colspan="10"><div class="loading"><div class="spinner"></div> Loading...</div></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination">
+        <div class="pg-info" id="pgInfo"></div>
+        <div class="pg-btns">
+          <button class="pg-btn" id="pgPrev" onclick="changePage(-1)" disabled>← Prev</button>
+          <button class="pg-btn" id="pgNext" onclick="changePage(1)">Next →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MENTORS TAB -->
+  <div class="section" id="sec-mentors">
+    <div style="margin-bottom:16px;color:var(--muted);font-size:0.82rem;">
+      Click <strong style="color:var(--text)">"View Students"</strong> on any mentor card to expand the full student list.
+    </div>
+    <div class="mentor-grid" id="mentorGrid">
+      <div class="loading"><div class="spinner"></div> Loading mentors...</div>
+    </div>
+  </div>
+
+  <!-- COMPANIES TAB -->
+  <div class="section" id="sec-companies">
+    <div style="margin-bottom:16px;color:var(--muted);font-size:0.8rem;">Students placed in internships, grouped by company</div>
+    <div class="company-grid" id="companyGrid">
+      <div class="loading"><div class="spinner"></div> Loading companies...</div>
+    </div>
+  </div>
+
+  <!-- API DOCS TAB -->
+  <div class="section" id="sec-api">
+    <div style="max-width:760px;">
+      <div style="font-size:1rem;font-weight:700;color:#fff;margin-bottom:16px;">⚙ REST API Reference</div>
+      <div style="color:var(--muted);font-size:0.82rem;margin-bottom:20px;">All endpoints are served from <code style="color:var(--cyan);font-family:'JetBrains Mono',monospace;background:rgba(6,182,212,0.08);padding:2px 6px;border-radius:3px;">/api</code></div>
+
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        ${[
+          ['GET', '/api/health',          'Health check — returns server status & student count'],
+          ['GET', '/api/stats',           'Dashboard KPIs — placement rate, resume stats, all counts'],
+          ['GET', '/api/students',        'All students — supports ?search, ?status, ?resume, ?batch, ?page, ?limit, ?sortBy, ?sortDir'],
+          ['GET', '/api/students/:uid',   'Single student by User ID'],
+          ['GET', '/api/mentors',         'All mentors with student list & placement stats'],
+          ['GET', '/api/mentors/:name',   'Single mentor with full student list'],
+          ['GET', '/api/companies',       'All companies with placed students'],
+          ['GET', '/api/batches',         'Batch breakdown — Ramanujan, Hopper, Turing'],
+          ['GET', '/api/placed',          'All placed students with company info'],
+        ].map(([method, path, desc]) => `
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 18px;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+              <span style="background:rgba(34,197,94,0.12);color:var(--green);border:1px solid rgba(34,197,94,0.25);padding:2px 8px;border-radius:5px;font-size:0.7rem;font-weight:700;font-family:'JetBrains Mono',monospace;">${method}</span>
+              <code style="color:var(--cyan);font-family:'JetBrains Mono',monospace;font-size:0.82rem;">${path}</code>
+            </div>
+            <div style="color:var(--muted);font-size:0.78rem;">${desc}</div>
+          </div>`).join('')}
+      </div>
+
+      <div style="margin-top:24px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px;">
+        <div style="font-size:0.8rem;font-weight:600;color:var(--text);margin-bottom:10px;">Example: Filter placed students in Turing batch</div>
+        <code style="display:block;font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--cyan);line-height:1.7;">
+          GET /api/students?status=Placed&batch=Turing&sortBy=name&sortDir=asc&page=1&limit=20
+        </code>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- ── SCRIPTS ── -->
+<script src="./js/api.js"></script>
+<script src="./js/utils.js"></script>
+<script src="./js/app.js"></script>
+
+</body>
+</html>
