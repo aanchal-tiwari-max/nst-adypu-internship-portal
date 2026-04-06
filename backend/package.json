@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "NST ADYPU Internship Portal - Backend API",
   "main": "server.js",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
     "start": "node --experimental-fetch server.js",
     "dev": "nodemon server.js"
