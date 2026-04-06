@@ -101,7 +101,12 @@ async function load_data() {
     console.error("❌ Failed to load students_data.json:", err);
   }
 }
-app.use(load_data);
+async function load(){
+  if(!STUDENTS){
+    await load_data();
+  }
+}
+app.use(load);
 
 // ─── Helper: compute stats ────────────────────────────────────
 function computeStats(data) {
