@@ -89,7 +89,6 @@ async function load_data() {
         }
       }
     }
-    fs.open("students_data.json")
     await fs.writeFile("students_data.json", JSON.stringify(data));
     const raw = await fs.readFile(
       path.join(__dirname, "students_data.json"),
