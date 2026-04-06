@@ -101,12 +101,12 @@ async function load_data() {
     console.error("❌ Failed to load students_data.json:", err);
   }
 }
-async function load(){
-  if(!STUDENTS){
-    await load_data();
-  }
-}
-app.use(load);
+// async function load(){
+//   if(!STUDENTS){
+//     await load_data();
+//   }
+// }
+// app.use(load);
 
 // ─── Helper: compute stats ────────────────────────────────────
 function computeStats(data) {
@@ -166,13 +166,13 @@ app.get("/api/health", (req, res) => {
 
 // GET /api/stats - Dashboard KPI stats
 app.get("/api/stats", async (req, res) => {
-  // await load_data();
+  await load_data();
   res.json(computeStats(STUDENTS));
 });
 
 // GET /api/students - All students with filtering, search, pagination, sort
 app.get("/api/students", async (req, res) => {
-  // await load_data();
+  await load_data();
   const {
     search = "",
     status = "all",
@@ -270,7 +270,7 @@ app.get("/api/students/:uid", (req, res) => {
 
 // GET /api/mentors - All mentors with their student lists & stats
 app.get("/api/mentors", async (req, res) => {
-  // await load_data();
+  await load_data();
   const mentorMap = {};
   STUDENTS.forEach((s) => {
     const m = s.mentor || "Unassigned";
@@ -305,7 +305,7 @@ app.get("/api/mentors", async (req, res) => {
 
 // GET /api/mentors/:name - Single mentor with all their students
 app.get("/api/mentors/:name", async (req, res) => {
-  // await load_data();
+  await load_data();
   const name = decodeURIComponent(req.params.name);
   const students = STUDENTS.filter((s) => s.mentor === name);
   if (students.length === 0)
@@ -331,7 +331,7 @@ app.get("/api/mentors/:name", async (req, res) => {
 // GET /api/companies - All companies with placed students
 app.get("/api/companies", async (req, res) => {
 
-  // await load_data();
+  await load_data();
   const companyMap = {};
   STUDENTS.forEach((s) => {
     if (s.company && s.status === "Placed") {
@@ -355,7 +355,7 @@ app.get("/api/companies", async (req, res) => {
 app.get("/api/batches", async (req, res) => {
   const batches = {};
 
-  // await load_data();
+  await load_data();
   STUDENTS.forEach((s) => {
     if (!batches[s.batch])
       batches[s.batch] = { name: s.batch, total: 0, placed: 0, approved: 0 };
@@ -369,7 +369,7 @@ app.get("/api/batches", async (req, res) => {
 // GET /api/placed - All placed students with company info
 app.get("/api/placed", async (req, res) => {
 
-  // await load_data();
+  await load_data();
   const placed = STUDENTS.filter((s) => s.status === "Placed" && s.company);
   res.json({ total: placed.length, students: placed });
 });
