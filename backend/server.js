@@ -15,6 +15,7 @@ app.use(express.json());
 // Serve frontend static files
 app.use(express.static(path.join(__dirname, "../frontend/public")));
 
+
 // ─── Load Data ────────────────────────────────────────────────
 let STUDENTS = [];
 async function load_data() {
@@ -100,8 +101,8 @@ async function load_data() {
     console.error("❌ Failed to load students_data.json:", err);
   }
 }
+app.use(load_data);
 
-load_data();
 // ─── Helper: compute stats ────────────────────────────────────
 function computeStats(data) {
   const total = data.length;
@@ -376,7 +377,6 @@ app.use((req, res) => {
 // ─── Start Server ─────────────────────────────────────────────
 app.listen(PORT, async () => {
 
-  await load_data();
   console.log(`\n🚀 NST ADYPU Internship Portal`);
   console.log(`   Backend API : http://localhost:${PORT}/api`);
   console.log(`   Dashboard   : http://localhost:${PORT}`);
