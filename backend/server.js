@@ -28,6 +28,7 @@ async function load_data() {
       );
     }
     const gcred = JSON.parse(gcred_str)
+    gcred.private_key = gcred.private_key.replace(/\\n/g, '\n');
     // console.log({gcred})
     const auth = new google.auth.GoogleAuth({
       credentials: gcred,
