@@ -7,8 +7,8 @@
     "node": ">=22.0.0"
   },
   "scripts": {
-    "start": "node --experimental-fetch server.js",
-    "dev": "nodemon server.js"
+    "start": "NODE_OPTIONS=--openssl-legacy-provider node server.js",
+    "dev": "NODE_OPTIONS=--openssl-legacy-provider nodemon server.js"
   },
   "dependencies": {
     "cors": "^2.8.6",
