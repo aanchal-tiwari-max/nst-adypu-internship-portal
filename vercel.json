@@ -1,5 +1,10 @@
 {
   "version": 2,
+  "functions": {
+    "backend/server.js": {
+      "runtime": "nodejs16.x"
+    }
+  },
   "builds": [
     {
       "src": "backend/server.js",
