@@ -361,7 +361,7 @@ app.get("/api/placed", (req, res) => {
 });
 
 // Catch-all: serve frontend
-app.get("*", (req, res) => {
+app.use((req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/public/index.html"));
 });
 
