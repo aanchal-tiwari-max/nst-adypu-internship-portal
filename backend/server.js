@@ -89,12 +89,12 @@ async function load_data() {
         }
       }
     }
-    await fs.writeFile("students_data.json", JSON.stringify(data));
-    const raw = await fs.readFile(
-      path.join(__dirname, "students_data.json"),
-      "utf-8",
-    );
-    STUDENTS = JSON.parse(raw);
+    // await fs.writeFile("students_data.json", JSON.stringify(data));
+    // const raw = await fs.readFile(
+    //   path.join(__dirname, "students_data.json"),
+    //   "utf-8",
+    // );
+    STUDENTS = data;
     console.log(`✅ Loaded ${STUDENTS.length} students from data file`);
   } catch (err) {
     console.error("❌ Failed to load students_data.json:", err);
